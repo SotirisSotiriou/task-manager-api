@@ -1,0 +1,12 @@
+{
+    "name": "vendor/tasks-api",
+    "autoload": {
+        "psr-4": {
+            "": "src/"
+        }
+    },
+    "require": {
+        "vlucas/phpdotenv": "^5.5",
+        "phpunit/phpunit": "^8"
+    }
+}
