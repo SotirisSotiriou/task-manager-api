@@ -27,3 +27,10 @@ if(!$auth->authenticateAccessToken()){
 
 $user_id = $auth->getUserID();
 
+$gateway = new TaskGateway($database);
+
+$controller = new TaskController($gateway);
+
+$controller->processRequest($_SERVER["REQUEST_METHOD"], $user_id);
+
+exit;
