@@ -28,7 +28,7 @@ class TaskController{
             switch($method){
                 case "POST":
                     $output_data = $this->gateway->addNewTask($user_id, $data);
-                    $this->respondTaskCreated($id);
+                    $this->respondTaskCreated($output_data);
                     break;
 
                 case "GET":
@@ -45,7 +45,7 @@ class TaskController{
                 case "GET":
                     $output_data = $this->gateway->getUserTaskByID($id, $user_id);
                     if(empty($output_data)){
-                        $this->respondTaskNotFound($id);
+                        $this->respondTaskNotFound($id, $user_id);
                     }
                     else{
                         echo json_encode($output_data);
@@ -53,23 +53,22 @@ class TaskController{
                     break;
 
                 case "PATCH":
-                    $output_data = $this->gataway->updateTaskInfo($id, $data);
+                    $output_data = $this->gateway->updateTaskInfo($id, $user_id, $data);
                     if($output_data > 0){
                         $this->respondTaskUpdated($id);
                     }
                     else{
-                        $this->respondTaskNotFound($id);
+                        $this->respondTaskNotFound($id, $user_id);
                     }
                     break;
 
                 case "DELETE":
-                    //TODO
-                    $output_data = $this->gateway->deleteTask($id);
+                    $output_data = $this->gateway->deleteTask($id, $user_id);
                     if($output_data > 0){
                         $this->respondTaskDeleted($id);
                     }
                     else{
-                        $this->respondTaskNotFound($id);
+                        $this->respondTaskNotFound($id, $user_id);
                     }
                     break;
 
@@ -133,15 +132,15 @@ class TaskController{
                 else if(filter_var($data["priority"], FILTER_VALIDATE_INT) === false){
                     $errors[] = "priority invalid format";
                 }
+                else if(!in_array($data["priority"], [1,2,3], true)){
+                    $errors[] = "priority must be 1,2,3";
+                }
 
                 if(empty($data["is_completed"])){
                     $errors[] = "is_completed is required";
                 }
-                else if(filter_var($data["is_completed"], FILTER_VALIDATE_INT) === false){
+                else if(!in_array($data["is_completed"], ["true","false"], true)){
                     $errors[] = "is_completed invalid format";
-                }
-                else if(!($data["is_completed"] === 1 or $data["is_completed"] === 0)){
-                    $errors[] = "is_completed must be 1 or 0";
                 }
                 break;
             
@@ -153,8 +152,8 @@ class TaskController{
                     if(filter_var($data["priority"], FILTER_VALIDATE_INT) === false){
                         $errors[] = "priority invalid format";
                     }
-                    else if(!in_array($data["priority"], [0,1,2,3], true)){
-                        $errors[] = "priority must be 0, 1, 2 or 3";
+                    else if(!in_array($data["priority"], [1,2,3], true)){
+                        $errors[] = "priority must be 1, 2 or 3";
                     }
                 }
                 
@@ -162,8 +161,8 @@ class TaskController{
                     if(filter_var($data["is_completed"], FILTER_VALIDATE_INT) === false){
                         $errors[] = "is_completed invalid format";
                     }
-                    else if(!in_array($data["is_completed"], [0,1], true)){
-                        $errors[] = "is_completed must be 1 or 0";
+                    else if(!in_array($data["is_completed"], ["true","false"], true)){
+                        $errors[] = "is_completed must be true or false";
                     }
                 }
                 break;
